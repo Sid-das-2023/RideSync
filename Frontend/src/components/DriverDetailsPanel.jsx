@@ -2,12 +2,17 @@ import React from 'react';
 import 'remixicon/fonts/remixicon.css';
 
 const DriverDetailsPanel = (props) => {
+  const { ride } = props;
+
+  const captainName = ride?.captain?.fullname?.firstname
+    ? `${ride.captain.fullname.firstname} ${ride.captain.fullname.lastname || ''}`
+    : 'Driver';
+  const plate = ride?.captain?.vehicle?.plate || '—';
+
   return (
     <div className="p-5 bg-white rounded-lg shadow-lg">
       <h5
-        onClick={() => {
-          props.setWaitingForDriverPanel(false);
-        }}
+        onClick={() => props.setWaitingForDriverPanel(false)}
         className="p-2 text-center absolute top-0 w-[93%]"
       >
         <i className="text-xl text-gray-200 ri-arrow-down-wide-line"></i>
@@ -19,30 +24,30 @@ const DriverDetailsPanel = (props) => {
           alt="Car"
         />
         <div className="text-right">
-          <h2 className="text-lg font-medium">Sarthak</h2>
-          <h4 className="text-xl font-bold">MP04 AB 1234</h4>
-          <p className="text-sm text-gray-500">Maruti Suzuki</p>
+          <h2 className="text-lg font-medium capitalize">{captainName}</h2>
+          <h4 className="text-xl font-bold">{plate}</h4>
+          <p className="text-sm text-gray-500">En route</p>
         </div>
       </div>
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-2 p-3 border-b">
           <i className="ri-map-pin-2-fill text-lg"></i>
           <div>
-            <h3 className="text-lg font-semibold">Pickup Location</h3>
-            <p className="text-gray-500 text-sm">123 Main Street, Springfield</p>
+            <h3 className="text-lg font-semibold">Pickup</h3>
+            <p className="text-gray-500 text-sm">{ride?.origin || '—'}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 p-3 border-b">
           <i className="ri-square-fill text-lg"></i>
           <div>
-            <h3 className="text-lg font-semibold">Drop-off Location</h3>
-            <p className="text-gray-500 text-sm">456 Elm Street, Springfield</p>
+            <h3 className="text-lg font-semibold">Drop-off</h3>
+            <p className="text-gray-500 text-sm">{ride?.destination || '—'}</p>
           </div>
         </div>
         <div className="flex items-center gap-2 p-3">
           <i className="ri-currency-fill text-lg"></i>
           <div>
-            <h3 className="text-lg font-semibold">$85.50</h3>
+            <h3 className="text-lg font-semibold">₹{ride?.fare ?? '—'}</h3>
             <p className="text-gray-500 text-sm">Cash</p>
           </div>
         </div>

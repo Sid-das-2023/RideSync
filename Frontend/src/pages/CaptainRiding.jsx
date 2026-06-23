@@ -1,23 +1,21 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
 import gsap from "gsap";
 import FinishRidePanel from "../components/FinishRidePanel";
 
 const CaptainRiding = () => {
-
   const [finishRidePanel, setFinishRidePanel] = useState(false);
   const finishRidePanelRef = useRef(null);
 
+  const location = useLocation();
+  const ride = location.state?.ride;
+
   useEffect(() => {
     if (finishRidePanel) {
-      gsap.to(finishRidePanelRef.current, {
-        transform: 'translateY(0%)',
-      });
+      gsap.to(finishRidePanelRef.current, { transform: 'translateY(0%)' });
     } else {
-      gsap.to(finishRidePanelRef.current, {
-        transform: 'translateY(100%)',
-      });
+      gsap.to(finishRidePanelRef.current, { transform: 'translateY(100%)' });
     }
   }, [finishRidePanel]);
 
@@ -30,7 +28,7 @@ const CaptainRiding = () => {
           alt="Uber Logo"
         />
         <Link
-          to="/home"
+          to="/captains/logout"
           className="h-10 w-10 bg-white flex items-center justify-center rounded-full"
         >
           <i className="text-lg font-medium ri-logout-box-r-line"></i>
@@ -43,25 +41,24 @@ const CaptainRiding = () => {
           alt="Background"
         />
       </div>
-      <div className="h-1/4 relative py-3 px-4 bg-yellow-300 ">
-        <h5 onClick={()=>{
-          setFinishRidePanel(true);
-        }} className="p-1 text-center absolute top-0 w-[93%]">
+      <div className="h-1/4 relative py-3 px-4 bg-yellow-300">
+        <h5
+          onClick={() => setFinishRidePanel(true)}
+          className="p-1 text-center absolute top-0 w-[93%]"
+        >
           <i className="text-xl text-gray-800 ri-arrow-up-wide-line"></i>
         </h5>
         <div className="rounded-lg flex justify-between px-4 mt-6 items-center w-full">
-          <h2 className="text-xl font-semibold">4 KM away</h2>
-      <div className="flex items-center bg-green-500 py-2 px-6 rounded-lg">
-            <button onClick={() => {
-              setFinishRidePanel(true);
-            }} className="">
-              <h3 className="text-gray-100 font-medium"> Finish Ride</h3>
+          <h2 className="text-xl font-semibold">{ride?.destination || 'Destination'}</h2>
+          <div className="flex items-center bg-green-500 py-2 px-6 rounded-lg">
+            <button onClick={() => setFinishRidePanel(true)}>
+              <h3 className="text-gray-100 font-medium">Finish Ride</h3>
             </button>
           </div>
         </div>
       </div>
       <div ref={finishRidePanelRef} className='fixed w-full translate-y-full z-10 bottom-0 bg-white px-3 py-10 pt-12'>
-        <FinishRidePanel setFinishRidePanel={setFinishRidePanel}/>
+        <FinishRidePanel ride={ride} setFinishRidePanel={setFinishRidePanel} />
       </div>
     </div>
   );

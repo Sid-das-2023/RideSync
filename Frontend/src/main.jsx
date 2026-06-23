@@ -8,12 +8,12 @@ import CaptainContext from "./context/CaptainContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <CaptainContext>
-      <UserContext>
-        <BrowserRouter>
+    <BrowserRouter>
+      <CaptainContext>
+        <UserContext>
           <App />
-        </BrowserRouter>
-      </UserContext>
-    </CaptainContext>
+        </UserContext>
+      </CaptainContext>
+    </BrowserRouter>
   </StrictMode>
 );

@@ -14,7 +14,7 @@ const CaptainDetails = () => {
               src='https://st2.depositphotos.com/2931363/6569/i/450/depositphotos_65699901-stock-photo-black-man-keeping-arms-crossed.jpg'
               alt='Captain'
             />
-            <h4 className='text-xl font-semibold capitalize'>{captain.fullname.firstname + " " + captain.fullname.lastname}</h4>
+            <h4 className='text-xl font-semibold capitalize'>{captain?.fullname?.firstname + " " + captain?.fullname?.lastname}</h4>
           </div>
           <div className='text-right'>
             <h4 className='text-xl font-bold'>₹245.50</h4>

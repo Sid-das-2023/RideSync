@@ -1,22 +1,22 @@
 const axios = require("axios");
 
+const NOMINATIM = "https://nominatim.openstreetmap.org";
+const OSRM = "http://router.project-osrm.org";
+
+const headers = { "User-Agent": "RideSync/1.0" };
+
 module.exports.getAddressCordinate = async (address) => {
-  const url = `https://maps.gomaps.pro/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${process.env.GOOGLE_MAP_API}`;
-  try {
-    const response = await axios.get(url);
-    if (response.data.status === "OK") {
-      const location = response.data.results[0].geometry.location;
-      return {
-        lat: location.lat,
-        lng: location.lng,
-      };
-    } else {
-      throw new Error("Unable to find location");
-    }
-  } catch (error) {
-    console.error(error);
-    throw error;
+  const response = await axios.get(`${NOMINATIM}/search`, {
+    params: { q: address, format: "json", limit: 1 },
+    headers,
+  });
+
+  if (!response.data.length) {
+    throw new Error("Unable to find location");
   }
+
+  const { lat, lon } = response.data[0];
+  return { lat: parseFloat(lat), lng: parseFloat(lon) };
 };
 
 module.exports.getDistanceTime = async (origin, destination) => {
@@ -24,42 +24,51 @@ module.exports.getDistanceTime = async (origin, destination) => {
     throw new Error("Origin and destination are required");
   }
 
-  const apiKey = process.env.GOOGLE_MAP_API;
-  const url = `https://maps.gomaps.pro/maps/api/distancematrix/json?origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
+  const geocode = async (place) => {
+    const res = await axios.get(`${NOMINATIM}/search`, {
+      params: { q: place, format: "json", limit: 1 },
+      headers,
+    });
+    if (!res.data.length) throw new Error(`Location not found: ${place}`);
+    return { lat: parseFloat(res.data[0].lat), lng: parseFloat(res.data[0].lon) };
+  };
 
-  try {
-    const response = await axios.get(url);
-    if (response.data.status === "OK") {
-      if (response.data.rows[0].elements[0].status === "ZERO_RESULTS") {
-        throw new Error("No routes found");
-      }
-      return response.data.rows[0].elements[0];
-    } else {
-      throw new Error("Unable to find distance and time");
-    }
-  } catch (error) {
-    console.error(error);
-    throw error;
+  const [o, d] = await Promise.all([geocode(origin), geocode(destination)]);
+
+  const response = await axios.get(
+    `${OSRM}/route/v1/driving/${o.lng},${o.lat};${d.lng},${d.lat}`,
+    { params: { overview: "false" } }
+  );
+
+  if (!response.data.routes?.length) {
+    throw new Error("No route found");
   }
+
+  const route = response.data.routes[0];
+  const distanceM = Math.round(route.distance);
+  const durationS = Math.round(route.duration);
+
+  return {
+    distance: {
+      value: distanceM,
+      text: `${(distanceM / 1000).toFixed(1)} km`,
+    },
+    duration: {
+      value: durationS,
+      text: `${Math.ceil(durationS / 60)} mins`,
+    },
+  };
 };
 
 module.exports.getAutoCompleteSuggestions = async (input) => {
-  if (!input) {
-    throw new Error("Query is required");
-  }
+  if (!input) throw new Error("Query is required");
 
-  const apiKey = process.env.GOOGLE_MAP_API;
-  const url = `https://maps.gomaps.pro/maps/api/place/autocomplete/json?input=${encodeURIComponent(input)}&key=${apiKey}`;
+  const response = await axios.get(`${NOMINATIM}/search`, {
+    params: { q: input, format: "json", limit: 5, addressdetails: 1 },
+    headers,
+  });
 
-  try {
-    const response = await axios.get(url);
-    if (response.data.status === "OK") {
-      return response.data.predictions;
-    } else {
-      throw new Error("Unable to find suggestions");
-    }
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  return response.data.map((place) => ({
+    description: place.display_name,
+  }));
 };

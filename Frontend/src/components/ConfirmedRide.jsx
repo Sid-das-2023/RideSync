@@ -41,16 +41,16 @@ const ConfirmedRide = (props) => {
           <div className="flex gap-5 items-center p-3">
             <i className="ri-currency-fill text-lg"></i>
             <div>
-              <h3 className="text-lg font-semibold">₹{props.fare[props.vehicleType]}</h3>
+              <h3 className="text-lg font-semibold">₹{props.fare?.[props.vehicleType]}</h3>
               <p className="text-gray-500 -mt-1 text-sm">Cash Cash</p>
             </div>
           </div>
         </div>
         <div className="w-full mt-5 bg-green-500 text-white p-2 rounded-lg font-semibold text-center">
-          <button onClick={()=> {
+          <button onClick={async () => {
             props.setVehicleFound(true);
             props.setConfirmRidePanel(false);
-            props.createRide();
+            await props.createRide();
           }}>Confirm</button>
         </div>
       </div>

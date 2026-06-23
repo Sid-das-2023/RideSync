@@ -1,16 +1,15 @@
-const moongose = require('mongoose');
-const { distinct } = require('./user.model');
+const mongoose = require('mongoose');
 
 
 
-const rideSchema = new moongose.Schema({
+const rideSchema = new mongoose.Schema({
     user: {
-        type: moongose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
     captain: {
-        type: moongose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Captain',
     },
     origin: {
@@ -52,4 +51,4 @@ const rideSchema = new moongose.Schema({
     },
 });
 
-module.exports = moongose.model('Ride', rideSchema);
+module.exports = mongoose.model('Ride', rideSchema);

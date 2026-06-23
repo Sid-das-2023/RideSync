@@ -41,7 +41,7 @@ const WaitingForDriver = (props) => {
           <div className="flex gap-5 items-center p-3">
             <i className="ri-currency-fill text-lg"></i>
             <div>
-              <h3 className="text-lg font-semibold">₹{props.fare[props.vehicleType]}</h3>
+              <h3 className="text-lg font-semibold">₹{props.fare?.[props.vehicleType]}</h3>
               <p className="text-gray-500 -mt-1 text-sm">Cash Cash</p>
             </div>
           </div>
